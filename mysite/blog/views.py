@@ -2,6 +2,7 @@ from django.shortcuts import render
 from .models import Post
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
 
 
 def post_list(request):
