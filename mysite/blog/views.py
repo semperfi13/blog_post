@@ -2,7 +2,6 @@ from django.shortcuts import render
 from .models import Post
 from django.http import Http404
 from django.shortcuts import get_object_or_404
-from django.urls import reverse
 
 
 def post_list(request):
@@ -11,7 +10,7 @@ def post_list(request):
     return render(request, "blog/post/list.html", {"posts": posts})
 
 
-def post_details(request, id):
+def post_detail(request, id):
 
     post = get_object_or_404(Post, id=id, status=Post.Status.PUBLISHED)
 
