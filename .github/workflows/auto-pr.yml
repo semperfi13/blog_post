@@ -1,19 +1,35 @@
-name: Auto Merge PRs
-
+name: Auto PR and Merge
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+  schedule:
+    - cron: '0 0 * * *' # daily at midnight
+  workflow_dispatch:
 
 jobs:
-  auto-merge:
+  create-pr:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write  # Nécessaire pour interagir avec les PRs
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Create PR
+        uses: peter-evans/create-pull-request@v5
+        id: pr
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Automated updates"
+          title: "Automated updates $(date +'%Y-%m-%d')"
+          body: "This is an automated PR"
+          branch: "auto-update-$(date +%Y%m%d)"
+          base: "main"
+          labels: "automated"
 
+  auto-merge:
+    needs: create-pr
+    runs-on: ubuntu-latest
     steps:
       - name: Auto Merge
-        uses: KeisukeYamashita/auto-pull-request-merge@v1
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          intervalSeconds: 10
-          timeoutSeconds: 30
+        uses: pascalgn/automerge-action@v0.15.6
+        if: ${{ needs.create-pr.outputs.pr-created == 'true' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_LABELS: "automated"
+          MERGE_METHOD: "squash"
