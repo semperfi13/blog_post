@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
+from django.urls import reverse
 
 
 class Post(models.Model):
@@ -8,12 +9,18 @@ class Post(models.Model):
         DRAFT = "DF", "Draft"
         PUBLISHED = "PB", "Published"
 
+    # CUSTOM MANAGE THAT ALLOW TO RETRIEVE ONLY PUBLISHED POST
+
     class PublishedManager(models.Manager):
         def get_queryset(self):
             return super().get_queryset().filter(status=Post.Status.PUBLISHED)
 
     title = models.CharField(max_length=250)
-    slug = models.SlugField(max_length=250)
+
+    # By using unique_for_date , the slug field is now required to be unique for
+    # the date stored in the publish field.
+
+    slug = models.SlugField(max_length=250, unique_for_date="publish")
     body = models.TextField()
     publish = models.DateTimeField(default=timezone.now)
     created = models.DateTimeField(auto_now_add=True)
@@ -31,3 +38,11 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+
+    # CANONICAL URLs
+
+    def get_absolute_url(self):
+        return reverse(
+            "blog:post_detail",
+            args=[self.publish.year, self.publish.month, self.publish.day, self.slug],
+        )
