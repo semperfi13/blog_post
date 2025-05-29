@@ -1,24 +1,16 @@
-name: Auto PR to main
+# File: .github/workflows/pull-request.yml
 
 on:
   push:
     branches:
-      - develop
+    - develop
 
 jobs:
-  create-pull-request:
+  pull-request:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          base: main
-          head: develop
-          title: "Auto PR: Merge develop into main"
-          body: "Cette pull request a été créée automatiquement par GitHub Actions."
-          branch: auto-pr/develop-to-main
-          delete-branch: true
+    - uses: actions/checkout@v3
+    - name: pull-request
+      uses: diillson/auto-pull-request@v1.0.1
+      with:
+        destination_branch: "main"
