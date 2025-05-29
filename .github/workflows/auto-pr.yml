@@ -1,0 +1,38 @@
+name: Auto PR and Merge (only for me)
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  auto-pr:
+    if: github.actor == 'semperfi13'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: main
+          head: develop
+          title: "Auto PR: Merge develop into main"
+          body: "Cette PR a été créée automatiquement."
+          branch: auto-pr/develop-to-main
+          delete-branch: true
+
+      - name: Enable auto-merge
+        if: steps.cpr.outputs.pull-request-url != ''
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
+          merge-method: squash

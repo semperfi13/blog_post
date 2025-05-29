@@ -4,11 +4,21 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator
 from django.core.paginator import EmptyPage, PageNotAnInteger
+from django.views.generic import ListView
+
+
+class PostListView(ListView):
+    """ALTERNATIVE POST LIST VIEW"""
+
+    queryset = Post.published.all()
+    context_object_name = "posts"
+    paginate_by = 2
+    template_name = "blog/post/list.html"
 
 
 def post_list(request):
     post_list = Post.published.all()
-    paginator = Paginator(post_list, 1)
+    paginator = Paginator(post_list, 2)
     page_number = request.GET.get("page", 1)
     try:
         posts = paginator.page(page_number)
