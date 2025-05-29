@@ -1,38 +1,19 @@
-name: Auto PR and Merge (only me)
+name: Auto Merge PRs
 
 on:
-  push:
-    branches:
-      - develop
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
-  auto-pr-and-merge:
-    if: github.actor == 'semperfi13'  # ← Remplace par ton pseudo GitHub
+  auto-merge:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      pull-requests: write
+      pull-requests: write  # Nécessaire pour interagir avec les PRs
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Create Pull Request
-        id: cpr
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          base: main
-          head: develop
-          title: "Auto PR: Merge develop into main"
-          body: "PR automatique créée depuis develop."
-          branch: auto-pr/develop-to-main
-          delete-branch: true
-
-      - name: Auto Merge Pull Request
-        if: steps.cpr.outputs.pull-request-number != ''
+      - name: Auto Merge
         uses: KeisukeYamashita/auto-pull-request-merge@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           intervalSeconds: 10
-          timeoutSeconds: 60
+          timeoutSeconds: 30
