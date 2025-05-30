@@ -23,7 +23,6 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           base: main
-          head: develop
           title: "Auto PR: Merge develop into main"
           body: "Cette PR a été créée automatiquement."
           branch: auto-pr/develop-to-main

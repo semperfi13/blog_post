@@ -8,7 +8,7 @@ from django.views.generic import ListView
 
 
 class PostListView(ListView):
-    """ALTERNATIVE POST LIST VIEW"""
+    """ALTERNATIVE POST LISTVIEW"""
 
     queryset = Post.published.all()
     context_object_name = "posts"
