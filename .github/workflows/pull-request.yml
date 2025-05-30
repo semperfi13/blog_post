@@ -1,4 +1,4 @@
-name: Force Create Pull Request
+name: Auto PR and Merge (only me)
 
 on:
   push:
@@ -6,26 +6,32 @@ on:
       - develop
 
 jobs:
-  force-pull-request:
+  auto-pr-and-merge:
+    if: github.actor == 'ton_username_github'  # ← Remplace par ton pseudo GitHub
     runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: write
-    
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Force create PR (always attempt)
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Create Pull Request
+        id: cpr
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          title: "Auto PR: develop → main"
-          body: "Automatically created pull request"
           base: main
-          branch: "force-pr-$(date +%s)"
+          title: "Auto PR: Merge develop into main"
+          body: "PR automatique créée depuis develop."
+          branch: auto-pr/develop-to-main
           delete-branch: true
-          commit-message: "Force create PR"
-          labels: "automated"
+
+      - name: Auto Merge Pull Request
+        if: steps.cpr.outputs.pull-request-number != ''
+        uses: KeisukeYamashita/auto-pull-request-merge@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          intervalSeconds: 10
+          timeoutSeconds: 60
