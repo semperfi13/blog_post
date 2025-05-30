@@ -245,7 +245,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👥 Authors
 
-- **ADAMOU NIKIEMA** - *Initial work* - [YourGitHub](https://github.com/semperfi13)
+- **ADAMOU NIKIEMA** - *Initial work* - [My Github](https://github.com/semperfi13)
 
 ## 🙏 Acknowledgments
 
