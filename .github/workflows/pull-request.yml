@@ -1,16 +1,31 @@
-# File: .github/workflows/pull-request.yml
+name: Force Create Pull Request
 
 on:
   push:
     branches:
-    - develop
+      - develop
 
 jobs:
-  pull-request:
+  force-pull-request:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    
     steps:
-    - uses: actions/checkout@v3
-    - name: pull-request
-      uses: diillson/auto-pull-request@v1.0.1
-      with:
-        destination_branch: "main"
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Force create PR (always attempt)
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "Auto PR: develop → main"
+          body: "Automatically created pull request"
+          base: main
+          branch: "force-pr-$(date +%s)"
+          delete-branch: true
+          commit-message: "Force create PR"
+          labels: "automated"
