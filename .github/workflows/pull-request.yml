@@ -1,46 +1,51 @@
-name: Auto Merge develop into main (only for me)
+name: Sync Develop with Optional Main Merge
 
 on:
   push:
-    branches:
-      - develop
+    branches: [develop]
+  workflow_dispatch:
+    inputs:
+      enable_main_merge:
+        description: 'Enable merge to main?'
+        type: boolean
+        default: true
+
+env:
+  ENABLE_MERGE_TO_MAIN: ${{ inputs.enable_main_merge || false }}
 
 jobs:
-  auto-merge:
+  sync:
     if: github.actor == 'semperfi13'
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: write  # Added for better permission handling
+      pull-requests: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-          ref: develop  # Explicitly checkout develop branch
+          ref: develop
 
-      - name: Configure Git
+      - name: Pull latest changes to develop
         run: |
-          git config --global user.email "action@github.com"
-          git config --global user.name "GitHub Action"
+          git pull origin develop
+          echo "Develop branch synchronized"
 
-      - name: Verify new commits exist
-        id: check-commits
+      - name: Merge to main (conditionnel)
+        if: env.ENABLE_MERGE_TO_MAIN == 'true'
         run: |
+          echo "Merging develop into main..."
           git fetch origin main
+          
+          # Vérification des nouveaux commits
           if [ $(git rev-list --count origin/main..origin/develop) -eq 0 ]; then
-            echo "No new commits to merge"
+            echo "Aucun nouveau commit à merger vers main"
             exit 0
-          else
-            echo "New commits found, proceeding with merge"
           fi
-
-      - name: Merge develop into main
-        if: steps.check-commits.outcome == 'success'
-        run: |
+          
           git checkout main
-          git pull origin main
-          git merge origin/develop --no-ff -m "Auto-merge: Merge develop into main [skip ci]"
+          git merge origin/develop --no-ff -m "Auto-merge: develop → main"
           git push origin main
+          echo "Merge vers main complété"
