@@ -1,46 +1,32 @@
-name: Auto Merge develop into main (only for me)
+name: Sync Develop with Optional Merge
 
 on:
   push:
-    branches:
-      - develop
+    branches: [develop]
+  workflow_dispatch:
+    inputs:
+      merge_to_main:
+        description: 'Merge develop into main?'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
-  auto-merge:
+  sync:
     if: github.actor == 'semperfi13'
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write  # Added for better permission handling
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-          ref: develop  # Explicitly checkout develop branch
+          ref: develop
+      
+      - name: Pull develop updates
+        run: git pull
 
-      - name: Configure Git
-        run: |
-          git config --global user.email "action@github.com"
-          git config --global user.name "GitHub Action"
-
-      - name: Verify new commits exist
-        id: check-commits
-        run: |
-          git fetch origin main
-          if [ $(git rev-list --count origin/main..origin/develop) -eq 0 ]; then
-            echo "No new commits to merge"
-            exit 0
-          else
-            echo "New commits found, proceeding with merge"
-          fi
-
-      - name: Merge develop into main
-        if: steps.check-commits.outcome == 'success'
+      - name: Conditional merge to main
+        if: github.event_name == 'workflow_dispatch' && inputs.merge_to_main == 'true'
         run: |
           git checkout main
-          git pull origin main
-          git merge origin/develop --no-ff -m "Auto-merge: Merge develop into main [skip ci]"
+          git merge develop --no-ff -m "Manual-triggered merge: develop → main [skip ci]"
           git push origin main
