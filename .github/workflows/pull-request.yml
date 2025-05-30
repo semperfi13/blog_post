@@ -8,7 +8,7 @@ on:
       enable_main_merge:
         description: 'Enable merge to main?'
         type: boolean
-        default: false
+        default: true
 
 env:
   ENABLE_MERGE_TO_MAIN: ${{ inputs.enable_main_merge || false }}
