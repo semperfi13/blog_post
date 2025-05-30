@@ -7,7 +7,7 @@ on:
 
 jobs:
   auto-pr-and-merge:
-    if: github.actor == 'ton_username_github'  # ← Remplace par ton pseudo GitHub
+    if: github.actor == 'semperfi13'  # ← Remplace par ton pseudo GitHub
     runs-on: ubuntu-latest
     permissions:
       contents: write
