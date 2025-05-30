@@ -1,51 +1,37 @@
-name: Sync Develop with Optional Main Merge
+name: Auto PR and Merge (only me)
 
 on:
   push:
-    branches: [develop]
-  workflow_dispatch:
-    inputs:
-      enable_main_merge:
-        description: 'Enable merge to main?'
-        type: boolean
-        default: true
-
-env:
-  ENABLE_MERGE_TO_MAIN: ${{ inputs.enable_main_merge || false }}
+    branches:
+      - develop
 
 jobs:
-  sync:
-    if: github.actor == 'semperfi13'
+  auto-pr-and-merge:
+    if: github.actor == 'semperfi13'  # ← Remplace par ton pseudo GitHub
     runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: write
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v5
         with:
-          fetch-depth: 0
-          ref: develop
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: main
+          title: "Auto PR: Merge develop into main"
+          body: "PR automatique créée depuis develop."
+          branch: auto-pr/develop-to-main
+          delete-branch: true
 
-      - name: Pull latest changes to develop
-        run: |
-          git pull origin develop
-          echo "Develop branch synchronized"
-
-      - name: Merge to main (conditionnel)
-        if: env.ENABLE_MERGE_TO_MAIN == 'true'
-        run: |
-          echo "Merging develop into main..."
-          git fetch origin main
-          
-          # Vérification des nouveaux commits
-          if [ $(git rev-list --count origin/main..origin/develop) -eq 0 ]; then
-            echo "Aucun nouveau commit à merger vers main"
-            exit 0
-          fi
-          
-          git checkout main
-          git merge origin/develop --no-ff -m "Auto-merge: develop → main"
-          git push origin main
-          echo "Merge vers main complété"
+      - name: Auto Merge Pull Request
+        if: steps.cpr.outputs.pull-request-number != ''
+        uses: KeisukeYamashita/auto-pull-request-merge@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          intervalSeconds: 10
+          timeoutSeconds: 60
