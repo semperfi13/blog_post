@@ -1,4 +1,4 @@
-name: Auto Merge (only for me)
+name: Auto Merge with main (only for me)
 on:
   push:
     branches:
