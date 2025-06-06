@@ -58,7 +58,7 @@ def post_share(request, post_id):
             )
             message = (
                 f"Read {post.title} as {post_url}\n\n"
-                f"{cd['name']}'s comments: {cd['comments']}'"
+                f"{cd['name']}'s comments: {cd['comments']}"
             )
             send_mail(
                 subject=subject,
@@ -67,8 +67,8 @@ def post_share(request, post_id):
                 recipient_list=[cd["to"]],
             )
             sent = True
-        else:
-            form = EmailPostForm()
+    else:
+        form = EmailPostForm()
 
     return render(
         request,
