@@ -1,0 +1,43 @@
+name: Auto PR and Merge (only me)
+
+# 📌 Ce workflow se déclenche à chaque push sur la branche develop
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  auto-pr-and-merge:
+    # ✅ Ce job s'exécute uniquement si c'est toi (semperfi13) qui push
+    if: github.actor == 'semperfi13'
+    runs-on: ubuntu-latest
+
+    # 🔐 Nécessaire pour que les actions puissent créer et merger des PR
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: main         # 👈 Branche de destination
+          head: develop      # 👈 Branche source (important, manquait dans ta version)
+          title: "Auto PR: Merge develop into main"
+          body: "PR automatique créée depuis develop."
+          branch: auto-pr/develop-to-main  # 👈 Branche intermédiaire créée pour la PR
+          delete-branch: true              # 👈 Elle sera supprimée après merge
+
+      - name: Auto Merge Pull Request
+        # ✅ Cette étape s'exécute seulement si la PR a bien été créée
+        if: steps.cpr.outputs.pull-request-number != ''
+        uses: KeisukeYamashita/auto-pull-request-merge@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          intervalSeconds: 10     # ⏱ Attente entre chaque tentative
+          timeoutSeconds: 60      # ⏳ Temps max avant d’abandonner

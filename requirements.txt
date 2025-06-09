@@ -1,1 +1,6 @@
 Django==5.2.1
+
+#Decouple helps you to organize your settings so that you can change parameters without having to redeploy your app.
+#https://github.com/HBNetwork/python-decouple?tab=readme-ov-file
+
+python-decouple==3.8
