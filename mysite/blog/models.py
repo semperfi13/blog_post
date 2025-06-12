@@ -2,12 +2,15 @@ from django.db import models
 from django.utils import timezone
 from django.conf import settings
 from django.urls import reverse
+from taggit.managers import TaggableManager
 
 
 class Post(models.Model):
     class Status(models.TextChoices):
         DRAFT = "DF", "Draft"
         PUBLISHED = "PB", "Published"
+
+    tags = TaggableManager()
 
     # CUSTOM MANAGE THAT ALLOW TO RETRIEVE ONLY PUBLISHED POST
 
