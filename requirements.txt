@@ -4,3 +4,8 @@ Django==5.2.1
 #https://github.com/HBNetwork/python-decouple?tab=readme-ov-file
 
 python-decouple==3.8
+
+#https://django-taggit.readthedocs.io/en/latest/
+#django-taggit is a reusable Django application designed to make adding tagging to your project easy and fun.
+
+django-taggit==5.0.1
