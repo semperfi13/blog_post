@@ -257,4 +257,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ⭐ **Star this repository if you found it helpful!**
 
-📧 **Questions?** Open an issue or contact [adamsnikiema187@gmail.com](mailto:adamsnikiema187@gmail.com)
+📧 **Questions?** Open an issue or contact me at [adamsnikiema187@gmail.com](mailto:adamsnikiema187@gmail.com)
