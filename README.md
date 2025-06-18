@@ -100,7 +100,7 @@ post = Post.objects.create(
     body="This is the content of my post",
     status="published"
 )
-post.tags.add("django", "python", "web-development")
+post.tags.add("django", "python", "web-development","Ai")
 ```
 
 ### Using the Search Feature
