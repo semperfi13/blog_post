@@ -51,7 +51,7 @@ def post_detail(request, year, month, day, post):
     comments = post.comments.filter(active=True)
     # Form for the users to comment
     form = CommentForm()
-    # List of similar posts
+    # List of similar posts based on their tags
     post_tags_id = post.tags.values_list("id", flat=True)
     similar_posts = Post.published.filter(tags__in=post_tags_id).exclude(id=post.id)
     similar_posts = similar_posts.annotate(same_tags=Count("tags")).order_by("-same_tags", "-publish")[:4]
