@@ -15,3 +15,5 @@ pip==25.1.1
 # SQL parsing library for Python
 # Used by Django for formatting SQL queries
 sqlparse==0.5.3
+#https://pypi.org/project/Markdown/
+markdown==3.6
